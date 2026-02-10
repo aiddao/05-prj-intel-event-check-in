@@ -26,12 +26,12 @@ function greetAttendee(name, teamName) {
 
 form.addEventListener("submit", function (event) {
   event.preventDefault();
-  count++;
   if (count >= maxCount) {
     alert("Maximum number of check-ins reached.");
     count--;
     return;
   }
+  count++;
   const name = nameInput.value.trim();
   const team = teamInput.value;
   const teamName = teamInput.selectedOptions[0].text;
