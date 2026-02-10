@@ -37,5 +37,8 @@ form.addEventListener("submit", function(event) {
     const newTotal = current + 1;
     teamCounter.textContent = newTotal;
 
+    const message = `Welcome, ${name} from team ${teamName}!`;
+    console.log(message);
+
     form.reset();
 });
