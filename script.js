@@ -18,6 +18,10 @@ function greetAttendee(name, teamName) {
   greeting.textContent = `🎉 Welcome, ${name} from team ${teamName}! 🎉`;
   greeting.classList.add("success-message");
   greeting.style.display = "block";
+  setTimeout(() => {
+    greeting.classList.remove("success-message");
+    greeting.style.display = "none";
+  }, 5000);
 }
 
 form.addEventListener("submit", function (event) {
