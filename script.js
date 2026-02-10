@@ -4,10 +4,56 @@ const teamInput = document.getElementById("teamSelect");
 const attendeeCount = document.getElementById("attendeeCount");
 const progressBar = document.getElementById("progressBar");
 
-let count = 0;
 const maxCount = 50;
+const storageKey = "sustainabilityCheckInData";
+
+const teamLabels = {
+  water: "Team Water Wise",
+  zero: "Team Net Zero",
+  power: "Team Renewables",
+};
+
+let attendees = [];
+
+function getTeamCounts() {
+  const teamCounts = { water: 0, zero: 0, power: 0 };
+  for (let i = 0; i < attendees.length; i++) {
+    const attendee = attendees[i];
+    if (teamCounts.hasOwnProperty(attendee.team)) {
+      teamCounts[attendee.team]++;
+    }
+  }
+  return teamCounts;
+}
+
+function updateTeamCounts(teamCounts) {
+  document.getElementById("waterCount").textContent = teamCounts.water;
+  document.getElementById("zeroCount").textContent = teamCounts.zero;
+  document.getElementById("powerCount").textContent = teamCounts.power;
+}
+
+function saveData() {
+  localStorage.setItem(storageKey, JSON.stringify(attendees));
+}
+
+function loadData() {
+  const saved = localStorage.getItem(storageKey);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        attendees = parsed;
+      }
+    } catch (error) {
+      attendees = [];
+    }
+  }
+  updateTeamCounts(getTeamCounts());
+  updateAttendanceUI();
+}
 
 function updateAttendanceUI() {
+  const count = attendees.length;
   attendeeCount.textContent = count;
   const percentage = Math.round((count / maxCount) * 100);
   progressBar.style.width = `${percentage}%`;
@@ -26,15 +72,9 @@ function greetAttendee(name, teamName) {
 
 form.addEventListener("submit", function (event) {
   event.preventDefault();
-  if (count >= maxCount) {
-    alert("Maximum number of check-ins reached.");
-    count--;
-    return;
-  }
-  count++;
   const name = nameInput.value.trim();
   const team = teamInput.value;
-  const teamName = teamInput.selectedOptions[0].text;
+  const teamName = teamLabels[team];
 
   if (name === "") {
     alert("Please enter your name.");
@@ -46,16 +86,22 @@ form.addEventListener("submit", function (event) {
     return;
   }
 
+  if (attendees.length >= maxCount) {
+    alert("Maximum number of check-ins reached.");
+    return;
+  }
+
   console.log(`Checked in: ${name} from ${teamName}`);
 
-  const teamCounter = document.getElementById(team + "Count");
-  const current = parseInt(teamCounter.textContent);
+  attendees.push({ name: name, team: team, teamName: teamName });
+  saveData();
 
-  const newTotal = current + 1;
-  teamCounter.textContent = newTotal;
+  updateTeamCounts(getTeamCounts());
 
   updateAttendanceUI();
   greetAttendee(name, teamName);
 
   form.reset();
 });
+
+loadData();
