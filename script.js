@@ -13,6 +13,13 @@ function updateAttendanceUI() {
   progressBar.style.width = `${percentage}%`;
 }
 
+function greetAttendee(name, teamName) {
+  const greeting = document.getElementById("greeting");
+  greeting.textContent = `🎉 Welcome, ${name} from team ${teamName}! 🎉`;
+  greeting.classList.add("success-message");
+  greeting.style.display = "block";
+}
+
 form.addEventListener("submit", function (event) {
   event.preventDefault();
   count++;
@@ -43,10 +50,8 @@ form.addEventListener("submit", function (event) {
   const newTotal = current + 1;
   teamCounter.textContent = newTotal;
 
-  const message = `Welcome, ${name} from team ${teamName}!`;
-  console.log(message);
-
   updateAttendanceUI();
+  greetAttendee(name, teamName);
 
   form.reset();
 });
